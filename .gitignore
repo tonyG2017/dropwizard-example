@@ -1,0 +1,11 @@
+**/target
+**/*.iml
+**/*.iws
+**/*.ipr
+**/*.pyc
+.idea
+.classpath
+.java-version
+.project
+.settings
+abandoned

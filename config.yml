@@ -11,16 +11,16 @@ database:
   driverClass: com.mysql.jdbc.Driver
 
   # the username
-  user: stuido
+  user: studio
 
   # the password
-  password: welcome1
+  password: welcome
 
   # the JDBC URL
   url: jdbc:mysql://localhost:3306/dw_people?useUnicode=true&characterEncoding=utf8&autoReconnect=true
 
   properties:
-    hibernate.dialect: org.hibernate.dialect.MySQL5Dialect
+    hibernate.dialect: org.hibernate.dialect.MySQL57Dialect
     hibernate.hbm2ddl.auto: update
     hibernate.format_sql: true
     hibernate.showSql: true

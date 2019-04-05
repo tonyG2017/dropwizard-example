@@ -1,11 +1,14 @@
 package tony.io.dropwizard;
 
 import io.dropwizard.assets.AssetsBundle;
+import io.dropwizard.db.DataSourceFactory;
+import io.dropwizard.hibernate.HibernateBundle;
 import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
 import io.swagger.v3.oas.integration.SwaggerConfiguration;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
+import tony.io.dropwizard.core.Person;
 import tony.io.dropwizard.resources.HelloWorldResource;
 import tony.io.dropwizard.health.TemplateHealthCheck;
 import io.dropwizard.Application;
@@ -26,11 +29,19 @@ public class DropwizardExampleApplication extends Application<DropwizardExampleC
         return "DropwizardExample";
     }
 
+    private final HibernateBundle<DropwizardExampleConfiguration> hibernate = new HibernateBundle<DropwizardExampleConfiguration>(Person.class) {
+        @Override
+        public DataSourceFactory getDataSourceFactory(DropwizardExampleConfiguration configuration) {
+            return configuration.getDataSourceFactory();
+        }
+    };
+
     @Override
     public void initialize(final Bootstrap<DropwizardExampleConfiguration> bootstrap) {
         // TODO: application initialization
         bootstrap.addBundle(new AssetsBundle("/dist", "/ui", "index.html", "ui"));
 
+        bootstrap.addBundle(hibernate);
     }
 
     @Override

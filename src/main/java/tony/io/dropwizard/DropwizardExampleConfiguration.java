@@ -2,7 +2,10 @@ package tony.io.dropwizard;
 
 import io.dropwizard.Configuration;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.dropwizard.db.DataSourceFactory;
 import org.hibernate.validator.constraints.*;
+
+import javax.validation.Valid;
 import javax.validation.constraints.*;
 
 public class DropwizardExampleConfiguration extends Configuration {
@@ -12,6 +15,10 @@ public class DropwizardExampleConfiguration extends Configuration {
 
     @NotEmpty
     private String defaultName = "Stranger";
+
+    @Valid
+    @NotNull
+    private DataSourceFactory database = new DataSourceFactory();
 
     @JsonProperty
     public String getTemplate() {
@@ -31,5 +38,15 @@ public class DropwizardExampleConfiguration extends Configuration {
     @JsonProperty
     public void setDefaultName(String name) {
         this.defaultName = name;
+    }
+
+    @JsonProperty("database")
+    public DataSourceFactory getDataSourceFactory() {
+        return database;
+    }
+
+    @JsonProperty("database")
+    public void setDataSourceFactory(DataSourceFactory dataSourceFactory) {
+        this.database = dataSourceFactory;
     }
 }

@@ -1,0 +1,26 @@
+template: Hello, %s!
+defaultName: Stranger
+logging:
+  level: INFO
+  loggers:
+    tony.io.dropwizard: DEBUG
+# Database settings.
+database:
+
+  # the name of your JDBC driver
+  driverClass: com.mysql.jdbc.Driver
+
+  # the username
+  user: studio
+
+  # the password
+  password: welcome
+
+  # the JDBC URL
+  url: jdbc:mysql://busgk0901.us.oracle.com:3306/dw_people?useUnicode=true&characterEncoding=utf8&autoReconnect=true
+
+  properties:
+    hibernate.dialect: org.hibernate.dialect.MySQL55Dialect
+    hibernate.hbm2ddl.auto: update
+    hibernate.format_sql: true
+    hibernate.showSql: true

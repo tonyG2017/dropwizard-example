@@ -1,5 +1,10 @@
 package tony.io.dropwizard.core;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import javax.annotation.Generated;
 import javax.persistence.Column;
         import javax.persistence.Entity;
         import javax.persistence.GeneratedValue;
@@ -20,6 +25,7 @@ import javax.persistence.Column;
                 )
         })
 public class Person {
+    @JsonIgnoreProperties(allowGetters = true)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -38,10 +44,12 @@ public class Person {
         this.jobTitle = jobTitle;
     }
 
+   // @JsonProperty
     public long getId() {
         return id;
     }
 
+    //@JsonIgnore
     public void setId(long id) {
         this.id = id;
     }

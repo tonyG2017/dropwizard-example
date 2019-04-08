@@ -9,11 +9,14 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import tony.io.dropwizard.core.Person;
+import tony.io.dropwizard.db.PersonDAO;
 import tony.io.dropwizard.resources.HelloWorldResource;
 import tony.io.dropwizard.health.TemplateHealthCheck;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import tony.io.dropwizard.resources.PeopleResource;
+import tony.io.dropwizard.resources.PersonResource;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -29,7 +32,7 @@ public class DropwizardExampleApplication extends Application<DropwizardExampleC
         return "DropwizardExample";
     }
 
-    private final HibernateBundle<DropwizardExampleConfiguration> hibernate = new HibernateBundle<DropwizardExampleConfiguration>(Person.class) {
+    private final HibernateBundle<DropwizardExampleConfiguration> hibernateBundle = new HibernateBundle<DropwizardExampleConfiguration>(Person.class) {
         @Override
         public DataSourceFactory getDataSourceFactory(DropwizardExampleConfiguration configuration) {
             return configuration.getDataSourceFactory();
@@ -41,7 +44,7 @@ public class DropwizardExampleApplication extends Application<DropwizardExampleC
         // TODO: application initialization
         bootstrap.addBundle(new AssetsBundle("/dist", "/ui", "index.html", "ui"));
 
-        bootstrap.addBundle(hibernate);
+        bootstrap.addBundle(hibernateBundle);
     }
 
     @Override
@@ -69,8 +72,11 @@ public class DropwizardExampleApplication extends Application<DropwizardExampleC
         );
         final TemplateHealthCheck healthCheck =
                 new TemplateHealthCheck(configuration.getTemplate());
+        final PersonDAO dao = new PersonDAO(hibernateBundle.getSessionFactory());
         environment.healthChecks().register("health-check-template", healthCheck);
         environment.jersey().register(resource);
+        environment.jersey().register(new PersonResource(dao));
+        environment.jersey().register(new PeopleResource(dao));
     }
 
 }

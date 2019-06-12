@@ -1,6 +1,6 @@
 package tony.io.dropwizard.core;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -30,7 +30,7 @@ import javax.persistence.Column;
 @ToString
 
 public class Person {
-    @JsonIgnoreProperties(allowGetters = true)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

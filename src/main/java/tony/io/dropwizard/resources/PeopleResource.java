@@ -17,7 +17,6 @@ public class PeopleResource {
         this.personDAO =personDAO;
     }
 
-    @JsonIgnoreProperties
     @POST
     @UnitOfWork
     @Consumes(MediaType.APPLICATION_JSON) // Swagger-UI Request Body application/json or -H "Content-Type: application/json"

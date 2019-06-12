@@ -5,6 +5,7 @@ import io.dropwizard.hibernate.UnitOfWork;
 import tony.io.dropwizard.core.Person;
 import tony.io.dropwizard.db.PersonDAO;
 
+import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
@@ -17,11 +18,10 @@ public class PeopleResource {
         this.personDAO =personDAO;
     }
 
-    @JsonIgnoreProperties
     @POST
     @UnitOfWork
     @Consumes(MediaType.APPLICATION_JSON) // Swagger-UI Request Body application/json or -H "Content-Type: application/json"
-    public Person createPerson(Person person){
+    public Person createPerson(@Valid Person person){
         return personDAO.create(person);
     }
 

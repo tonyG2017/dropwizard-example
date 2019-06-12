@@ -19,7 +19,7 @@ public class PersonDAO extends AbstractDAO<Person> {
     }
 
     public Person create(Person person) {
-        System.out.println("tony creating " + person.getId() + " " + person.getFullName() + " " + person.getJobTitle());
+        System.out.println("tony creating " + " " + person.getFullName() + " " + person.getJobTitle()+ " " + person.getPassWord());
         return persist(person);
     }
 

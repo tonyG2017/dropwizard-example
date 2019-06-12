@@ -1,6 +1,6 @@
 package tony.io.dropwizard.core;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -14,7 +14,9 @@ import javax.persistence.Column;
         import javax.persistence.NamedQueries;
         import javax.persistence.NamedQuery;
         import javax.persistence.Table;
-        import java.util.Objects;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.util.Objects;
 
 @Entity
 @Table(name = "people")
@@ -30,16 +32,24 @@ import javax.persistence.Column;
 @ToString
 
 public class Person {
-    @JsonIgnoreProperties(allowGetters = true)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @NotNull(message = "fullName cannot be null")
+    @Size(min = 2, max = 20)
     @Column(name = "fullName", nullable = false)
     private String fullName;
 
+    @NotNull(message = "jobTitle cannot be null")
+    @Size(min = 2, max = 20)
     @Column(name = "jobTitle", nullable = false)
     private String jobTitle;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Column(name = "passWord", nullable = true)
+    private String passWord;
 
     @Override
     public boolean equals(Object o) {

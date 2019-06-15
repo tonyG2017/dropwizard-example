@@ -1,5 +1,6 @@
 package tony.io.dropwizard;
 
+import ca.mestevens.java.configuration.TypesafeConfiguration;
 import io.dropwizard.Configuration;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.db.DataSourceFactory;
@@ -8,7 +9,7 @@ import org.hibernate.validator.constraints.*;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 
-public class DropwizardExampleConfiguration extends Configuration {
+public class DropwizardExampleConfiguration extends TypesafeConfiguration {
     // TODO: implement service configuration
     @NotEmpty
     private String template;

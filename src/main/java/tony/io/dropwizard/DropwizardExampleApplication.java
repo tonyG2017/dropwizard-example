@@ -1,5 +1,6 @@
 package tony.io.dropwizard;
 
+import ca.mestevens.java.configuration.bundle.TypesafeConfigurationBundle;
 import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.hibernate.HibernateBundle;
@@ -42,6 +43,8 @@ public class DropwizardExampleApplication extends Application<DropwizardExampleC
     @Override
     public void initialize(final Bootstrap<DropwizardExampleConfiguration> bootstrap) {
         // TODO: application initialization
+        bootstrap.addBundle(new TypesafeConfigurationBundle());
+
         bootstrap.addBundle(new AssetsBundle("/dist", "/ui", "index.html", "ui"));
 
         bootstrap.addBundle(hibernateBundle);

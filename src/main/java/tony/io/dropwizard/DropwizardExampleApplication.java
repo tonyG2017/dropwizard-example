@@ -18,13 +18,16 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import tony.io.dropwizard.resources.PeopleResource;
 import tony.io.dropwizard.resources.PersonResource;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Slf4j
 public class DropwizardExampleApplication extends Application<DropwizardExampleConfiguration> {
 
     public static void main(final String[] args) throws Exception {
+        log.info("Starting DropwizardExampleApplication"); //log variable is provided by @Slf4j
         new DropwizardExampleApplication().run(args);
     }
 

@@ -1,6 +1,8 @@
 package tony.io.dropwizard;
 
 import ca.mestevens.java.configuration.bundle.TypesafeConfigurationBundle;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.hibernate.HibernateBundle;
@@ -56,33 +58,43 @@ public class DropwizardExampleApplication extends Application<DropwizardExampleC
     @Override
     public void run(final DropwizardExampleConfiguration configuration,
                     final Environment environment) {
-        OpenAPI oas = new OpenAPI();
-        Info info = new Info()
-                .title("Hello World API")
-                .description("RESTful greetings for you.")
-                .termsOfService("http://example.com/terms")
-                .contact(new Contact().email("john@example.com"));
+        try {
 
-        oas.info(info);
-        SwaggerConfiguration oasConfig = new SwaggerConfiguration()
-                .openAPI(oas)
-                .prettyPrint(true)
-                .resourcePackages(Stream.of("tony.io.dropwizard")
-                        .collect(Collectors.toSet()));
-        environment.jersey().register(new OpenApiResource()
-                .openApiConfiguration(oasConfig));
-        // TODO: implement application
-        final HelloWorldResource resource = new HelloWorldResource(
-                configuration.getTemplate(),
-                configuration.getDefaultName()
-        );
-        final TemplateHealthCheck healthCheck =
-                new TemplateHealthCheck(configuration.getTemplate());
-        final PersonDAO dao = new PersonDAO(hibernateBundle.getSessionFactory());
-        environment.healthChecks().register("health-check-template", healthCheck);
-        environment.jersey().register(resource);
-        environment.jersey().register(new PersonResource(dao));
-        environment.jersey().register(new PeopleResource(dao));
+            // Configure dependency injection
+            log.info("Configuring Guice Injector");
+            Injector injector = Guice.createInjector(
+                    new DropwizardExampleModule(configuration, environment)
+            );
+            OpenAPI oas = new OpenAPI();
+            Info info = new Info()
+                    .title("Hello World API")
+                    .description("RESTful greetings for you.")
+                    .termsOfService("http://example.com/terms")
+                    .contact(new Contact().email("john@example.com"));
+
+            oas.info(info);
+            SwaggerConfiguration oasConfig = new SwaggerConfiguration()
+                    .openAPI(oas)
+                    .prettyPrint(true)
+                    .resourcePackages(Stream.of("tony.io.dropwizard")
+                            .collect(Collectors.toSet()));
+            environment.jersey().register(new OpenApiResource()
+                    .openApiConfiguration(oasConfig));
+            // TODO: implement application
+            final TemplateHealthCheck healthCheck =
+                    new TemplateHealthCheck(configuration.getTemplate());
+            final PersonDAO dao = new PersonDAO(hibernateBundle.getSessionFactory());
+            environment.healthChecks().register("health-check-template", healthCheck);
+            //Get and register the appropriate instance for the given injection type, HelloWorldResource.class
+            environment.jersey().register(injector.getInstance(HelloWorldResource.class));
+            environment.jersey().register(new PersonResource(dao));
+            environment.jersey().register(new PeopleResource(dao));
+
+            log.info("DropwizardExampleApplication initialization completed");
+        } catch (Throwable t) {
+            log.error("DropwizardExampleApplication failed to start", t);
+            throw t;
+        }
     }
 
 }

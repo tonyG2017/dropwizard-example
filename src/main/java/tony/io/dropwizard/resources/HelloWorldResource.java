@@ -7,6 +7,8 @@ package tony.io.dropwizard.resources;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.annotation.Metered;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import io.swagger.v3.oas.annotations.Operation;
 import tony.io.dropwizard.api.Saying;
 import com.codahale.metrics.annotation.Timed;
@@ -31,7 +33,8 @@ public class HelloWorldResource {
     //static final MetricRegistry metrics = new MetricRegistry();
     //static final Meter requests = metrics.meter("requests");
 
-    public HelloWorldResource(String template, String defaultName) {
+    @Inject
+    public HelloWorldResource(@Named("template") String template, @Named("defaultName") String defaultName) {
         this.template = template;
         this.defaultName = defaultName;
         this.counter = new AtomicLong();

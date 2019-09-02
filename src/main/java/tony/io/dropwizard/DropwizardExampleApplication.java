@@ -1,6 +1,7 @@
 package tony.io.dropwizard;
 
 import ca.mestevens.java.configuration.bundle.TypesafeConfigurationBundle;
+import com.google.common.collect.ImmutableList;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import io.dropwizard.assets.AssetsBundle;
@@ -22,6 +23,9 @@ import tony.io.dropwizard.resources.PeopleResource;
 import tony.io.dropwizard.resources.PersonResource;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,6 +49,29 @@ public class DropwizardExampleApplication extends Application<DropwizardExampleC
         }
     };
 
+    //Work
+    public static final List<Class<?>> RESOURCE_CLASSES = ImmutableList.<Class<?>>builder()
+            .add(HelloWorldResource.class)
+            .add(PeopleResource.class)
+            .add(PersonResource.class)
+            .build();
+    /*
+    //Not work
+    public static final List<Class<?>> RESOURCE_CLASSES = new ArrayList<Class<?>>();
+            RESOURCE_CLASSES.add(HelloWorldResource.class);
+            RESOURCE_CLASSES.add(PeopleResource.class);
+            RESOURCE_CLASSES.add(PersonResource.class);
+    */
+
+    /*
+    //Work
+    public static final List<Class<?>> RESOURCE_CLASSES = Arrays.asList(
+                HelloWorldResource.class,
+                PeopleResource.class,
+                PersonResource.class
+            );
+    */
+
     @Override
     public void initialize(final Bootstrap<DropwizardExampleConfiguration> bootstrap) {
         // TODO: application initialization
@@ -63,7 +90,7 @@ public class DropwizardExampleApplication extends Application<DropwizardExampleC
             // Configure dependency injection
             log.info("Configuring Guice Injector");
             Injector injector = Guice.createInjector(
-                    new DropwizardExampleModule(configuration, environment)
+                    new DropwizardExampleModule(configuration, environment, hibernateBundle)
             );
             OpenAPI oas = new OpenAPI();
             Info info = new Info()
@@ -83,13 +110,11 @@ public class DropwizardExampleApplication extends Application<DropwizardExampleC
             // TODO: implement application
             final TemplateHealthCheck healthCheck =
                     new TemplateHealthCheck(configuration.getTemplate());
-            final PersonDAO dao = new PersonDAO(hibernateBundle.getSessionFactory());
             environment.healthChecks().register("health-check-template", healthCheck);
             //Get and register the appropriate instance for the given injection type, HelloWorldResource.class
-            environment.jersey().register(injector.getInstance(HelloWorldResource.class));
-            environment.jersey().register(new PersonResource(dao));
-            environment.jersey().register(new PeopleResource(dao));
-
+            for (Class<?> clazz: RESOURCE_CLASSES){
+                environment.jersey().register(injector.getInstance(clazz));
+            }
             log.info("DropwizardExampleApplication initialization completed");
         } catch (Throwable t) {
             log.error("DropwizardExampleApplication failed to start", t);

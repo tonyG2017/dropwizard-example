@@ -1,5 +1,6 @@
 package tony.io.dropwizard.db;
 
+import com.google.inject.Inject;
 import tony.io.dropwizard.core.Person;
 import io.dropwizard.hibernate.AbstractDAO;
 
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class PersonDAO extends AbstractDAO<Person> {
+    @Inject
     public PersonDAO(SessionFactory factory) {
         super(factory);
     }

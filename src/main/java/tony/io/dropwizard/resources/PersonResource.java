@@ -1,6 +1,7 @@
 package tony.io.dropwizard.resources;
 
 
+import com.google.inject.Inject;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.jersey.params.LongParam;
 import tony.io.dropwizard.core.Person;
@@ -15,6 +16,7 @@ public class PersonResource {
 
     private final PersonDAO peopleDAO;
 
+    @Inject
     public PersonResource(PersonDAO peopleDAO) {
         this.peopleDAO = peopleDAO;
     }

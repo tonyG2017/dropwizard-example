@@ -67,6 +67,14 @@ public class Person {
                 Objects.equals(this.jobTitle, that.jobTitle);
     }
 
+    public Person copy(Person other){
+        setId(other.id);
+        setFullName(other.fullName);
+        setJobTitle(other.jobTitle);
+        setPassWord(other.passWord);
+        return this;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(id, fullName, jobTitle);

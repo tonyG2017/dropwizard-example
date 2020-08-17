@@ -10,9 +10,9 @@ import org.hibernate.query.Query;
 import java.util.List;
 import java.util.Optional;
 
-public class PersonDAO extends AbstractDAO<Person> {
+public class PeopleDAO extends AbstractDAO<Person> {
     @Inject
-    public PersonDAO(SessionFactory factory) {
+    public PeopleDAO(SessionFactory factory) {
         super(factory);
     }
 

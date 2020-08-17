@@ -13,18 +13,14 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import tony.io.dropwizard.core.Person;
-import tony.io.dropwizard.db.PersonDAO;
 import tony.io.dropwizard.resources.HelloWorldResource;
 import tony.io.dropwizard.health.TemplateHealthCheck;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import tony.io.dropwizard.resources.PeopleResource;
-import tony.io.dropwizard.resources.PersonResource;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -53,7 +49,6 @@ public class DropwizardExampleApplication extends Application<DropwizardExampleC
     public static final List<Class<?>> RESOURCE_CLASSES = ImmutableList.<Class<?>>builder()
             .add(HelloWorldResource.class)
             .add(PeopleResource.class)
-            .add(PersonResource.class)
             .build();
     /*
     //Not work

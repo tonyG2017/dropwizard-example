@@ -74,6 +74,60 @@ public class PeopleResource {
         }
     }
 
+    @Path("/{personId}/increaseSalaryByPessimisticLock")
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response addSalaryWithPessimisticLock(@PathParam("personId") LongParam personId, @Valid int salaryIncrease) {
+        log.info("Increase {} dollars  person whose id is {}",salaryIncrease,personId.get());
+
+        try {
+            peopleDAO.addSalaryPessimisticLock(personId.get(),salaryIncrease);
+            return Response.ok()
+                    .build();
+        }catch (Exception e){
+            return Response.status(HttpStatus.NOT_FOUND_404)
+                    .entity(e.getMessage())
+                    .build();
+        }
+    }
+
+    @Path("/{personId}/increaseSalaryWithoutLock")
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response addSalaryWithoutlock(@PathParam("personId") LongParam personId, @Valid int salaryIncrease) {
+        log.info("Increase {} dollars  person whose id is {}",salaryIncrease,personId.get());
+
+        try {
+            peopleDAO.addSalaryWithoutLock(personId.get(),salaryIncrease);
+            return Response.ok()
+                    .build();
+        }catch (Exception e){
+            return Response.status(HttpStatus.NOT_FOUND_404)
+                    .entity(e.getMessage())
+                    .build();
+        }
+    }
+
+    @Path("/{personId}/increaseSalaryOptimisticLock")
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response addSalaryOptimistictlock(@PathParam("personId") LongParam personId, @Valid int salaryIncrease) {
+        log.info("Increase {} dollars  person whose id is {}",salaryIncrease,personId.get());
+
+        try {
+            peopleDAO.addSalaryOptimisticLock(personId.get(),salaryIncrease);
+            return Response.ok()
+                    .build();
+        }catch (Exception e){
+            return Response.status(HttpStatus.NOT_FOUND_404)
+                    .entity(e.getMessage())
+                    .build();
+        }
+    }
+
 //    @Path("/names/{fullName}")
 //    @GET
 //    @UnitOfWork

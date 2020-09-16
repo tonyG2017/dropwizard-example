@@ -2,6 +2,7 @@ package tony.io.dropwizard.db;
 
 import com.google.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.LockMode;
 import org.hibernate.Transaction;
 import tony.io.dropwizard.core.Person;
 import io.dropwizard.hibernate.AbstractDAO;
@@ -20,9 +21,13 @@ import java.util.Optional;
 
 @Slf4j
 public class PeopleDAO extends AbstractDAO<Person> {
+
+    private SessionFactory daoFactory;
+
     @Inject
     public PeopleDAO(SessionFactory factory) {
         super(factory);
+        daoFactory = factory;
     }
 
     public Optional<Person> findById(Long id) {
@@ -56,15 +61,149 @@ public class PeopleDAO extends AbstractDAO<Person> {
     }
 
     public void update(Person person) throws Exception{
-        Session session = this.currentSession();
-        Person perisistedPerson = session.get(Person.class, (Serializable) Objects.requireNonNull(person.getId()));
-        if(perisistedPerson == null)
-            throw (new Exception(
-                    String.format("Person with id:%s NotFound", person.getId())
-            ));
-        perisistedPerson.copy(person);
-        log.info("Updating person: " + person);
-        session.update(perisistedPerson);
+        Session session = daoFactory.openSession();
+        try {
+            //set transaction timeout to 15 seconds
+//            session.getTransaction().setTimeout(15);
+            session.getTransaction().begin();
+
+            // do some work
+//            Person perisistedPerson = session.get(Person.class, (Serializable) Objects.requireNonNull(person.getId()),LockMode.UPGRADE);
+            Person perisistedPerson = session.get(Person.class, (Serializable) Objects.requireNonNull(person.getId()));
+            if(perisistedPerson == null)
+                throw (new Exception(
+                        String.format("Person with id:%s NotFound", person.getId())
+                ));
+            perisistedPerson.copy(person);
+            log.info("Updating person: " + person+ "in session: "+session);
+
+            session.update(perisistedPerson);
+            session.getTransaction().commit();
+        }
+        catch (RuntimeException e) {
+            session.getTransaction().rollback();
+            System.out.println(e);
+            throw e; // or display error message
+        }
+        finally {
+            session.close();
+        }
+    }
+
+    public void addSalaryWithoutLock(long id, int salaryIncrease) throws Exception{
+        Session session = daoFactory.openSession();
+        try {
+            //set transaction timeout to 15 seconds
+//            session.getTransaction().setTimeout(15);
+            session.getTransaction().begin();
+
+            // do some work
+//            Person perisistedPerson = session.get(Person.class, (Serializable) Objects.requireNonNull(id),LockMode.UPGRADE);
+            Person perisistedPerson = session.get(Person.class, (Serializable) Objects.requireNonNull(id));
+            if(perisistedPerson == null)
+                throw (new Exception(
+                        String.format("Person with id:%s NotFound",id)
+                ));
+
+            int targetSalary= perisistedPerson.getSalary()+salaryIncrease;
+            perisistedPerson.setSalary(targetSalary);
+            if(salaryIncrease >0) {
+                Thread.sleep(10000);
+            }
+            log.info("Updating salary without lock: " + perisistedPerson);
+            session.update(perisistedPerson);
+            session.getTransaction().commit();
+        }
+        catch (RuntimeException e) {
+            session.getTransaction().rollback();
+            System.out.println(e);
+            throw e; // or display error message
+        }
+        finally {
+            session.close();
+        }
+    }
+
+    public void addSalaryPessimisticLock(long id, int salaryIncrease) throws Exception{
+        Session session = daoFactory.openSession();
+        try {
+            //set transaction timeout to 15 seconds
+//            session.getTransaction().setTimeout(15);
+            session.getTransaction().begin();
+
+            // do some work
+            /*
+                 select
+        person0_.id as id1_0_0_,
+        person0_.fullName as fullName2_0_0_,
+        person0_.jobTitle as jobTitle3_0_0_,
+        person0_.passWord as passWord4_0_0_,
+        person0_.salary as salary5_0_0_
+    from
+        people person0_
+    where
+        person0_.id=? for update
+             */
+            Person perisistedPerson = session.get(Person.class, (Serializable) Objects.requireNonNull(id),LockMode.UPGRADE);
+//            Person perisistedPerson = session.get(Person.class, (Serializable) Objects.requireNonNull(id));
+            if(perisistedPerson == null)
+                throw (new Exception(
+                        String.format("Person with id:%s NotFound",id)
+                ));
+
+            int targetSalary= perisistedPerson.getSalary()+salaryIncrease;
+            perisistedPerson.setSalary(targetSalary);
+            if(salaryIncrease >0) {
+                Thread.sleep(10000);
+            }
+            log.info("Updating salary with PessimisticLock: " + perisistedPerson);
+            session.update(perisistedPerson);
+            session.getTransaction().commit();
+        }
+        catch (RuntimeException e) {
+            session.getTransaction().rollback();
+            System.out.println(e);
+            throw e; // or display error message
+        }
+        finally {
+            session.close();
+        }
+    }
+    public void addSalaryOptimisticLock(long id, int salaryIncrease) throws Exception{
+        Session session = daoFactory.openSession();
+        boolean stop=false;
+        while(!stop){
+            try {
+                //set transaction timeout to 15 seconds
+//            session.getTransaction().setTimeout(15);
+                session.getTransaction().begin();
+
+                // do some work
+//            Person perisistedPerson = session.get(Person.class, (Serializable) Objects.requireNonNull(id),LockMode.UPGRADE);
+                Person perisistedPerson = session.get(Person.class, (Serializable) Objects.requireNonNull(id));
+                if(perisistedPerson == null)
+                    throw (new Exception(
+                            String.format("Person with id:%s NotFound",id)
+                    ));
+
+                int targetSalary= perisistedPerson.getSalary()+salaryIncrease;
+                perisistedPerson.setSalary(targetSalary);
+                if(salaryIncrease >0) {
+                    Thread.sleep(10000);
+                }
+                log.info("Updating Salary with OptimisticLock( : " + perisistedPerson);
+                session.update(perisistedPerson);
+                session.getTransaction().commit();
+                stop=true;
+            }
+            catch (RuntimeException e) {
+                session.getTransaction().rollback();
+                System.out.println(e);
+            }
+        }
+
+            session.close();
+
     }
 
     @SuppressWarnings("unchecked")
